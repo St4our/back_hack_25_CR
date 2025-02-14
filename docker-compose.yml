@@ -1,0 +1,14 @@
+services:
+  api:
+    build:
+      dockerfile: api.dockerfile
+    environment:
+      MODULE_NAME: 'api'
+      MAX_WORKERS: 10
+    env_file:
+      - .env
+    ports:
+      - 9000:80
+    volumes:
+      - ./assets:/app/assets
+      - ./static:/app/static
