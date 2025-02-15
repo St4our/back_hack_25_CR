@@ -36,7 +36,7 @@ class UserService:
             'last_code': user.last_code
         }
 
-    async def create(self, name: str, email: str, password) -> dict:
+    async def create(self, name: str, email: str, password, bg_tasks: BackgroundTasks) -> dict:
         if await BaseService().get(self.model, email=email):
             return HTTPException(
                 status_code=400,
@@ -48,9 +48,18 @@ class UserService:
             name=name,
             password_hash=pbkdf2_sha512.hash(password),
         )
-        return {
-            'status': 'ok'
-        }
+        user = await BaseService().get(self.model, email=email)
+        # Генерация одноразового кода
+        code = "".join(random.choices(string.digits, k=6))
+        # Отправка кода по email
+        bg_tasks.add_task(send_verification_code, email, code)
+        # Код истечёт через 15 минут
+        expiration = datetime.now() + timedelta(minutes=15)
+        await BaseService().update(user, last_code=code, code_expiration=expiration)
+        return JSONResponse(content={
+            'status': 'ok',
+            'detail': 'Code is sent'
+        }, status_code=202)
 
     async def get(self, user: User, id: int):
         """

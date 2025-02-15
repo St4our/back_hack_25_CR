@@ -11,17 +11,11 @@ class Settings(BaseSettings):
 
     jwt_secret: str
 
-    username: str
-    password: str
-    base_url: str
-
     api_link: str
     files_dir: str = 'assets/images'
     upload_dir: str = 'static'
     date_format: str = '%Y-%m-%d'
     date_time_format: str = '%Y-%m-%d %H:%M'
-
-    auth = HTTPBasicAuth(username, password)
 
     model_config = SettingsConfigDict(env_file='.env')
 
