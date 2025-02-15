@@ -36,52 +36,52 @@ class FighterService:
             'events': [{'id': event.id, 'title': event.title} for event in (fighter.events or [])]
         }
 
-from sqlalchemy.orm import joinedload
-from sqlalchemy.future import select
-from fastapi import HTTPException
+    from sqlalchemy.orm import joinedload
+    from sqlalchemy.future import select
+    from fastapi import HTTPException
 
-async def get_fighter(self, id: int):
-    """ Получение одного бойца по ID с названием района """
-    result = await self.db.execute(
-        select(Fighter)
-        .options(
+    async def get_fighter(self, id: int):
+        """ Получение одного бойца по ID с названием района """
+        result = await self.db.execute(
+            select(Fighter)
+            .options(
+                joinedload(Fighter.awards),
+                joinedload(Fighter.events),
+                joinedload(Fighter.municipality)  # Загружаем объект района
+            )
+            .filter(Fighter.id == id)
+        )
+        fighter = result.scalars().first()
+
+        if not fighter:
+            raise HTTPException(status_code=404, detail="Fighter not found")
+
+        return {
+            'status': 'ok',
+            'fighter': await self.generate_fighter_dict(fighter)
+        }
+
+    async def get_all_fighters(self, name: str = None, municipality_id: int = None):
+        """ Получение всех бойцов с возможностью фильтрации и названием района """
+        query = select(Fighter).options(
             joinedload(Fighter.awards),
             joinedload(Fighter.events),
             joinedload(Fighter.municipality)  # Загружаем объект района
-        )
-        .filter(Fighter.id == id)
-    )
-    fighter = result.scalars().first()
+        ).order_by(Fighter.id.desc())
 
-    if not fighter:
-        raise HTTPException(status_code=404, detail="Fighter not found")
+        if name and name.strip():
+            query = query.filter(Fighter.name.ilike(f"%{name}%"))
 
-    return {
-        'status': 'ok',
-        'fighter': await self.generate_fighter_dict(fighter)
-    }
+        if municipality_id is not None:
+            query = query.filter(Fighter.municipality_id == municipality_id)
 
-async def get_all_fighters(self, name: str = None, municipality_id: int = None):
-    """ Получение всех бойцов с возможностью фильтрации и названием района """
-    query = select(Fighter).options(
-        joinedload(Fighter.awards),
-        joinedload(Fighter.events),
-        joinedload(Fighter.municipality)  # Загружаем объект района
-    ).order_by(Fighter.id.desc())
+        result = await self.db.execute(query)
+        fighters = result.unique().scalars().all()
 
-    if name and name.strip():
-        query = query.filter(Fighter.name.ilike(f"%{name}%"))
-
-    if municipality_id is not None:
-        query = query.filter(Fighter.municipality_id == municipality_id)
-
-    result = await self.db.execute(query)
-    fighters = result.unique().scalars().all()
-
-    return {
-        'status': 'ok',
-        'fighters': [await self.generate_fighter_dict(fighter) for fighter in fighters]
-    }
+        return {
+            'status': 'ok',
+            'fighters': [await self.generate_fighter_dict(fighter) for fighter in fighters]
+        }
 
     async def create(self, user_id: int, name: str, birth_death_years: str, municipality_id: int, short_info: str, photo_path: str) -> dict:
         """ Создание нового бойца и запись в user_logs """
