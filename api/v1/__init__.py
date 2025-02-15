@@ -16,5 +16,5 @@ router = APIRouter(
     tags=["V1"]
 )
 
-routers = [router_health, router_auth, router_users, router_awards, router_events, router_fighter, router_municipality, router_nextGis]
+routers = [router_health, router_auth, router_users, router_awards, router_events, router_fighter, router_municipality, router_nextGis, router_fiches]
 [router.include_router(_router) for _router in routers]

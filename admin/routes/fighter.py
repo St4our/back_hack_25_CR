@@ -1,7 +1,7 @@
 from flask import request, jsonify
 from flask_restful import Resource
-from admin.models.fighter import Fighter
-from admin.models.base import db
+from models.fighter import Fighter
+from models.base import db
 from pydantic import ValidationError
 from pydantic import BaseModel
 from typing import Optional, List
