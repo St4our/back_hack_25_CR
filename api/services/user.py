@@ -82,6 +82,7 @@ class UserService:
                 status_code=404,
                 detail='User was not found'
             )
+
         if not pbkdf2_sha512.verify(password, user.password_hash):
             raise HTTPException(
                 status_code=401,

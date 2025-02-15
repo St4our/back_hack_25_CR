@@ -8,7 +8,7 @@ from .v1 import router as router_v1
 
 
 app = FastAPI(
-    title='DocGPT API',
+    title='Oren book',
     redoc_url=None
 )
 

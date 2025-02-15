@@ -11,3 +11,5 @@ passlib
 PyJWT
 aiofiles
 aiosqlite
+smtlib
+email
