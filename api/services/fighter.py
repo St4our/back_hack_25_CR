@@ -6,7 +6,7 @@ from db.models.fighters import Fighter
 from db.models.user_logs import UserLog
 from api.services.base import BaseService
 from db.database import get_db
-from fastapi import Query
+from fastapi import Queryn
 
 class FighterService:
     """
@@ -35,10 +35,6 @@ class FighterService:
             'awards': [{'id': award.id, 'name': award.name} for award in (fighter.awards or [])],
             'events': [{'id': event.id, 'title': event.title} for event in (fighter.events or [])]
         }
-
-    from sqlalchemy.orm import joinedload
-    from sqlalchemy.future import select
-    from fastapi import HTTPException
 
     async def get_fighter(self, id: int):
         """ Получение одного бойца по ID с названием района """
