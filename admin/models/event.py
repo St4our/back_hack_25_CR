@@ -1,6 +1,6 @@
-from .models.base import db
+from admin.models.base import db
 from sqlalchemy.orm import relationship
-from .models.fighter_event_association import fighter_event_association
+from admin.models.fighter_event_association import fighter_event_association
 
 class Event(db.Model):
     """

@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, ForeignKey
 from sqlalchemy.orm import relationship
-from .models.base import db
+from admin.models.base import db
 
 class UserLog(db.Model):
     """
