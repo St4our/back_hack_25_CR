@@ -1,12 +1,10 @@
 from sqlalchemy import Column, String, Integer, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
+from admin.models.base import db
+from admin.models.fighter_event_association import fighter_event_association
+from admin.models.fighter_award_association import fighter_award_association
 
-
-from db.models.fighter_event_association import fighter_event_association
-from db.models.fighter_award_association import fighter_award_association
-from db.base_model import Model
-
-class Fighter(Model):
+class Fighter(db.Model):
     """
     Модель бойца
     """
@@ -23,4 +21,5 @@ class Fighter(Model):
     municipality = relationship("Municipality", back_populates="fighters")
     awards = relationship("Award", secondary=fighter_award_association, back_populates="fighters")
     events = relationship("Event", secondary=fighter_event_association, back_populates="fighters")
-    logs = relationship("UserLog", back_populates="fighter", cascade="all, delete-orphan")
+    logs = relationship("UserLog", back_populates="fighter")
+

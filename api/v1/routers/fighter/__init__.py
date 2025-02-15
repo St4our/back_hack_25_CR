@@ -2,12 +2,12 @@ from fastapi import APIRouter
 
 from .get_fighters import router as router_fighters
 from .get_fighter import router as router_fighter
-from .verify_code import router as router_verify_code
+from .create import router as router_create_fighter
 
 router = APIRouter(
-    prefix="/auth",
-    tags=["Auth"]
+    prefix="/fighter",
+    tags=["Fighter"]
 )
 
-routers = [router_fighter, router_fighters, router_verify_code]
+routers = [router_fighter, router_fighters, router_create_fighter]
 [router.include_router(_router) for _router in routers]

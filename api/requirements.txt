@@ -2,7 +2,6 @@ fastapi[standard]
 loguru
 pydantic[email]
 pydantic_settings
-alembic
 greenlet
 asyncpg
 sqlalchemy
@@ -11,5 +10,4 @@ apscheduler
 passlib
 PyJWT
 aiofiles
-fastapi-sso
 aiosqlite

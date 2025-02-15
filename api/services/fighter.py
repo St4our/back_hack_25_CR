@@ -1,6 +1,7 @@
 from fastapi import HTTPException
 from api.services.base import BaseService
 from db.models.fighters import Fighter
+from db.models.user_logs import UserLog
 
 
 
@@ -54,12 +55,26 @@ class FighterService:
         return {'status': 'ok', 'count': count, 'awards': [await self.generate_award_dict(award) for award in awards]}
 
 
-    async def create(self, name: str, birth_death_years: str, municipality_id: int, short_info: str, photo_path: str) -> dict:
+    async def create(self, user_id: int, name: str, birth_death_years: str, municipality_id: int, short_info: str, photo_path: str) -> dict:
         """
-        Создание нового бойца
+        Создание нового бойца и запись в user_logs
         """
-        fighter = await BaseService().create(self.model, name=name, birth_death_years=birth_death_years, 
-                                             municipality_id=municipality_id, short_info=short_info, photo_path=photo_path)
+        fighter = await BaseService().create(
+            self.model,
+            name=name,
+            birth_death_years=birth_death_years,
+            municipality_id=municipality_id,
+            short_info=short_info,
+            photo_path=photo_path
+        )
+
+
+        await BaseService().create(
+            UserLog,
+            user_id=user_id,
+            fighter_id=fighter.id
+        )
+
         return {'status': 'ok', 'fighter_id': fighter.id}
     
     async def delete(self, id: int) -> dict:

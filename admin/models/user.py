@@ -1,8 +1,8 @@
 from sqlalchemy import Column, String, Integer, Boolean
 from sqlalchemy.orm import relationship
-from db.base_model import Model
+from admin.models.base import db
 
-class User(Model):
+class User(db.Model):
     """
     Модель пользователя
     """
