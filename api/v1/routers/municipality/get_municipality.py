@@ -3,7 +3,7 @@ from fastapi import APIRouter
 from api.services.municipality import MunicipalityService
 
 router = APIRouter(
-    prefix="/municipalities"
+    prefix="/municipality"
 )
 
 @router.get('')

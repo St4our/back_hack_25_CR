@@ -1,6 +1,16 @@
 import requests
-from config import base_url, auth
 from typing import Dict, Any
+from requests.auth import HTTPBasicAuth
+
+username = 'hackathon_18'
+password = 'hackathon_18_25'
+auth = HTTPBasicAuth(username, password)
+
+# Базовый URL API
+base_url = 'https://geois2.orb.ru/api'
+
+# Идентификатор векторного слоя
+layer_id = 8786
 
 async def add_feature(layer_id: int, feature_data: Dict[str, Any]) -> Dict[str, Any]:
     url = f'{base_url}/resource/{layer_id}/feature/'
