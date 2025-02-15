@@ -1,6 +1,6 @@
-from .base import db
+from admin.models.base import db
 from sqlalchemy.orm import relationship
-from .fighter_award_association import fighter_award_association
+from admin.models.fighter_award_association import fighter_award_association
 
 class Award(db.Model):
     """
