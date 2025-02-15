@@ -1,4 +1,4 @@
-from admin.models.base import db
+from .base import db
 
 fighter_award_association = db.Table(
     'fighter_award',

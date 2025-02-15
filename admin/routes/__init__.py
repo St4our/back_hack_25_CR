@@ -1,10 +1,10 @@
 from flask_restful import Api
-from admin.routes.awards import AwardListResource, AwardResource, AwardUpdateResource
-from admin.routes.event import EventResource, EventListResource, EventUpdateResource
-from admin.routes.municipalities import MunicipalityListResource, MunicipalityResource, MunicipalityUpdateResource
-from admin.routes.fighter import FighterResource, FighterListResource, FighterUpdateResource
-from admin.routes.users import UserListResource, UserResource
-from admin.routes.user_logs import UserLogListResource, UserLogResource
+from .awards import AwardListResource, AwardResource, AwardUpdateResource
+from .event import EventResource, EventListResource, EventUpdateResource
+from .municipalities import MunicipalityListResource, MunicipalityResource, MunicipalityUpdateResource
+from .fighter import FighterResource, FighterListResource, FighterUpdateResource
+from .users import UserListResource, UserResource
+from .user_logs import UserLogListResource, UserLogResource
 
 def register_api(api: Api):
     api.add_resource(AwardListResource, "/awards")
