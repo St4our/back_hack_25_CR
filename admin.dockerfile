@@ -6,4 +6,4 @@ RUN pip install --no-cache-dir -r /tmp/requirements.txt
 COPY . /app
 WORKDIR /app
 
-ENTRYPOINT python adpin/admin.py
+ENTRYPOINT python admin/admin.py
