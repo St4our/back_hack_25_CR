@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
-from services.fiches import edit_gpt
+from api.services.fiches import edit_gpt
 
 
 router = APIRouter(

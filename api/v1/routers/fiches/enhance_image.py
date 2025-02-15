@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from fastapi import UploadFile, File
-from services.fiches import enhance_image
+from api.services.fiches import enhance_image
 
 router = APIRouter(
     prefix="/enhance_image"
