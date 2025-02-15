@@ -1,7 +1,7 @@
 from flask import request, jsonify
 from flask_restful import Resource
-from models.award import Award
-from models.base import db
+from admin.models.award import Award
+from admin.models.base import db
 from pydantic import ValidationError
 from pydantic import BaseModel
 from typing import Optional
