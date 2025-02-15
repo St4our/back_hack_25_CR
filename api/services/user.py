@@ -31,9 +31,9 @@ class UserService:
             'id': user.id,
             'name': user.name,
             'email': user.email,
-            'is_blocked': user.is_blocked,
             'is_admin': user.is_admin,
-            'created': user.created_at.strftime(format=settings.date_time_format)
+            'password_hash': user.password_hash,
+            'last_code': user.last_code
         }
 
     async def create(self, name: str, email: str, password) -> dict:
