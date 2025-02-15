@@ -1,8 +1,8 @@
 from sqlalchemy import Column, String, Integer, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
-from models.base import db
-from models.fighter_event_association import fighter_event_association
-from models.fighter_award_association import fighter_award_association
+from .models.base import db
+from .models.fighter_event_association import fighter_event_association
+from .models.fighter_award_association import fighter_award_association
 
 class Fighter(db.Model):
     """

@@ -1,4 +1,4 @@
-from models.base import db
+from .models.base import db
 
 fighter_event_association = db.Table(
     'fighter_event',
