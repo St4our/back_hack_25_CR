@@ -23,7 +23,7 @@ class FighterService:
         return {
             "id": fighter.id,
             "name": fighter.name,
-            "municipality": fighter.municipality.name if fighter.municipality else None,  # Теперь выводим название района
+            "municipality": fighter.municipality.title if fighter.municipality else None,  # Теперь выводим название района
             "awards": [award.name for award in fighter.awards],
             "events": [event.name for event in fighter.events]
         }
