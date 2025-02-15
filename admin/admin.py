@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_restful import Api
-from .models.base import db
+from models.base import db
 from routes import register_api
 from config_db import Config_db
 
