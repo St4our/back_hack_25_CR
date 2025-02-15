@@ -82,12 +82,6 @@ class UserService:
                 status_code=404,
                 detail='User was not found'
             )
-        # Проверка на блок
-        if user.is_blocked:
-            raise HTTPException(
-                status_code=401,
-                detail='You are banned'
-            )
         if not pbkdf2_sha512.verify(password, user.password_hash):
             raise HTTPException(
                 status_code=401,
