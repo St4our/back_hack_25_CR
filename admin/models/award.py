@@ -1,4 +1,4 @@
-from base import db
+from .base import db
 from sqlalchemy.orm import relationship
 from fighter_award_association import fighter_award_association
 

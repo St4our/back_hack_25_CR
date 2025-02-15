@@ -1,6 +1,6 @@
 from sqlalchemy import Column, String, Integer, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
-from base import db
+from .base import db
 from fighter_event_association import fighter_event_association
 from fighter_award_association import fighter_award_association
 

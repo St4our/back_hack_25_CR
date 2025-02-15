@@ -1,6 +1,6 @@
 from sqlalchemy import Column, String, Integer
 from sqlalchemy.orm import relationship
-from base import db
+from .base import db
 
 class Municipality(db.Model):
     """
