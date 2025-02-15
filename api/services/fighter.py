@@ -6,7 +6,7 @@ from db.models.fighters import Fighter
 from db.models.user_logs import UserLog
 from api.services.base import BaseService
 from db.database import get_db
-from fastapi import Queryn
+from fastapi import Query
 
 class FighterService:
     """
