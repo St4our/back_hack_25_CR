@@ -18,7 +18,7 @@ class FighterService:
         self.model = Fighter
 
     @staticmethod
-    async def generate_fighter_dict(self, fighter):
+    async def generate_fighter_dict(fighter):
         """ Генерация словаря бойца с названием района """
         return {
             "id": fighter.id,
