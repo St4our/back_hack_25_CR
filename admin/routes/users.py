@@ -1,6 +1,6 @@
 from flask import request, jsonify
 from flask_restful import Resource
-from admin.models.user import User
+from models.user import User
 from models.base import db
 from pydantic import BaseModel, ValidationError
 
