@@ -1,15 +1,20 @@
-from fastapi import HTTPException
-from api.services.base import BaseService
+from fastapi import HTTPException, Depends
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import joinedload
+from sqlalchemy.future import select
 from db.models.fighters import Fighter
 from db.models.user_logs import UserLog
-
-
+from api.services.base import BaseService
+from db.database import get_db
+from fastapi import Query
 
 class FighterService:
     """
     Сервис для работы с бойцами
     """
-    def __init__(self):
+
+    def __init__(self, db: AsyncSession):
+        self.db = db
         self.model = Fighter
 
     @staticmethod
@@ -19,6 +24,7 @@ class FighterService:
         """
         if not fighter:
             return {}
+
         return {
             'id': fighter.id,
             'name': fighter.name,
@@ -26,40 +32,60 @@ class FighterService:
             'municipality_id': fighter.municipality_id,
             'short_info': fighter.short_info,
             'photo_path': fighter.photo_path,
-            'awards': [{'id': award.id, 'name': award.name} for award in fighter.awards],
-            'events': [{'id': event.id, 'title': event.title} for event in fighter.events]
+            'awards': [{'id': award.id, 'name': award.name} for award in (fighter.awards or [])],
+            'events': [{'id': event.id, 'title': event.title} for event in (fighter.events or [])]
         }
-    
-    async def get_fighter(self, id: int) -> dict:
-        """
-        Получение бойца по id
-        """
-        fighter = await BaseService().get(self.model, id=id)
+
+    async def get_fighter(self, id: int):
+        """ Получение одного бойца по ID """
+        result = await self.db.execute(
+            select(Fighter)
+            .options(joinedload(Fighter.awards), joinedload(Fighter.events))
+            .filter(Fighter.id == id)
+        )
+        fighter = result.scalars().first()
+
         if not fighter:
             raise HTTPException(status_code=404, detail="Fighter not found")
-        return {'status': 'ok', 'fighter': await self.generate_fighter_dict(fighter)}
-    
-    async def get_all_fighters(self) -> dict:
-        """
-        Получение всех бойцов
-        """
-        fighters = await BaseService().get_all(self.model)
-        return {'status': 'ok', 'fighters': [await self.generate_fighter_dict(fighter) for fighter in fighters]}
-    
-    async def search_fighters(self, query: str, limit: int = 0, page: int = 1) -> dict:
-        """
-        Поиск бойцов по названию
-        """
-        custom_where = self.model.name.ilike(f"%{query}%")
-        awards, count = await BaseService().search(self.model, custom_where=custom_where, limit=limit, page=page)
-        return {'status': 'ok', 'count': count, 'awards': [await self.generate_award_dict(award) for award in awards]}
+
+        return {
+            'status': 'ok',
+            'fighter': await self.generate_fighter_dict(fighter)
+        }
+
+    async def get_all_fighters(self, name: str = None, municipality_id: int = None):
+        """ Получение всех бойцов с возможностью фильтрации по имени и муниципалитету """
+        query = select(Fighter).options(
+            joinedload(Fighter.awards),
+            joinedload(Fighter.events)
+        ).order_by(Fighter.id.desc())
+
+        # Проверка на вывод имени и муниципалитета
+        print(f"Name: {name}, Municipality ID: {municipality_id}")
+
+        # Фильтрация по имени (если передано)
+        if name and name.strip():
+            print(f"Applying name filter: {name}")
+            query = query.filter(Fighter.name.ilike(f"%{name}%"))
+
+        # Фильтрация по муниципалитету (если передано)
+        if municipality_id is not None:
+            print(f"Applying municipality_id filter: {municipality_id}")
+            query = query.filter(Fighter.municipality_id == municipality_id)
+
+        # Выполнение запроса
+        result = await self.db.execute(query)
+        fighters = result.unique().scalars().all()
+
+        return {
+            'status': 'ok',
+            'fighters': [await self.generate_fighter_dict(fighter) for fighter in fighters]
+        }
 
 
     async def create(self, user_id: int, name: str, birth_death_years: str, municipality_id: int, short_info: str, photo_path: str) -> dict:
-        """
-        Создание нового бойца и запись в user_logs
-        """
-        fighter = await BaseService().create(
+        """ Создание нового бойца и запись в user_logs """
+        fighter = await BaseService(self.db).create(
             self.model,
             name=name,
             birth_death_years=birth_death_years,
@@ -68,34 +94,29 @@ class FighterService:
             photo_path=photo_path
         )
 
-
-        await BaseService().create(
+        await BaseService(self.db).create(
             UserLog,
             user_id=user_id,
             fighter_id=fighter.id
         )
 
         return {'status': 'ok', 'fighter_id': fighter.id}
-    
+
     async def delete(self, id: int) -> dict:
-        """
-        Удаление бойца
-        """
-        await BaseService().delete(self.model, id=id)
+        """ Удаление бойца """
+        await BaseService(self.db).delete(self.model, id=id)
         return {'status': 'ok'}
-    
+
     async def update(self, id: int, name: str, birth_death_years: str, short_info: str, photo_path: str) -> dict:
-        """
-        Обновление информации о бойце
-        """
-        fighter = await BaseService().get(self.model, id=id)
+        """ Обновление информации о бойце """
+        fighter = await BaseService(self.db).get(self.model, id=id)
         if not fighter:
             raise HTTPException(status_code=404, detail="Fighter not found")
-        
+
         fighter.name = name
         fighter.birth_death_years = birth_death_years
         fighter.short_info = short_info
         fighter.photo_path = photo_path
-        
-        updated_fighter = await BaseService().update(fighter)
+
+        updated_fighter = await BaseService(self.db).update(fighter)
         return {'status': 'ok', 'fighter': await self.generate_fighter_dict(updated_fighter)}

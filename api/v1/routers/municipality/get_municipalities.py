@@ -8,4 +8,4 @@ router = APIRouter(
 
 @router.get('')
 async def route():
-    return await MunicipalityService().get_municipality()
+    return await MunicipalityService().get_all_municipalities()

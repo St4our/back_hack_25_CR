@@ -15,7 +15,6 @@ class Fighter(db.Model):
     birth_death_years = Column(String, nullable=False)
     municipality_id = Column(Integer, ForeignKey("municipalities.id", ondelete="SET NULL"))
     short_info = Column(String, nullable=True)
-    is_accept = Column(Boolean, default=False)
     photo_path = Column(String, nullable=True)
 
     municipality = relationship("Municipality", back_populates="fighters")

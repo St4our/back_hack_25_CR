@@ -2,11 +2,6 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 import aiosqlite
 
 class Settings(BaseSettings):
-    postgres_host: str
-    postgres_port: int
-    postgres_user: str
-    postgres_password: str
-    postgres_db: str
     sqlite_db: str = 'database.db'
 
     email_address: str

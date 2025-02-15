@@ -1,4 +1,6 @@
 from sqlalchemy import Select, delete
+from sqlalchemy import select
+from sqlalchemy.orm import joinedload
 
 from db.database import new_session
 
@@ -26,15 +28,26 @@ class BaseService:
         Получение записи из базы данных
         """
         async with self.get_session() as session:
-            result = await session.execute(Select(db_model).order_by(db_model.id.desc()).filter_by(**filters))
+            result = await session.execute(select(db_model).order_by(db_model.id.desc()).filter_by(**filters))
             return result.scalars().first()
 
-    async def get_all(self, db_model, **filters):
+    async def get_all(
+        self, 
+        db_model, 
+        options=None,
+        **filters
+    ):
         """
         Получение всех записей из базы данных, которые удовлетворяют фильтрам
         """
         async with self.get_session() as session:
-            result = await session.execute(Select(db_model).order_by(db_model.id.desc()).filter_by(**filters))
+            query = select(db_model).order_by(db_model.id.desc()).filter_by(**filters)
+            
+
+            if options:
+                query = query.options(*options)
+                
+            result = await session.execute(query)
             return result.scalars().all()
 
     async def get_list(

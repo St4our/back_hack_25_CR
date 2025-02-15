@@ -1,10 +1,11 @@
 from fastapi import APIRouter
 
 from .get_municipalities import router as router_municipalities
+from .get_municipality import router as router_municipalities
 
 router = APIRouter(
     prefix="/municipality",
-    tags=["Event"]
+    tags=["Municipality"]
 )
 
 routers = [router_municipalities]

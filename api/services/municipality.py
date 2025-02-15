@@ -30,6 +30,16 @@ class MunicipalityService:
             raise HTTPException(status_code=404, detail="Municipality not found")
         return {'status': 'ok', 'municipality': await self.generate_municipality_dict(municipality)}
     
+    async def get_all_municipalities(self) -> dict:
+        """
+        Получение всех муниципалитетов
+        """
+        municipalities = await BaseService().get_all(self.model)
+        return {
+            'status': 'ok',
+            'municipalities': [await self.generate_municipality_dict(municipality) for municipality in municipalities]
+        }
+    
     async def create(self, title: str) -> dict:
         """
         Создание нового муниципалитета
