@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
-from services.fiches import edit_text_gpt
+from services.fiches import edit_gpt
 
 
 router = APIRouter(
@@ -16,5 +16,5 @@ class EditTextResponse(BaseModel):
 
 @router.post("", response_model=EditTextResponse)
 async def edit_text(request: EditTextRequest):
-    edited_text = edit_text_gpt(request.text)
+    edited_text = edit_gpt(request.text)
     return EditTextResponse(original_text=request.text, edited_text=edited_text)
