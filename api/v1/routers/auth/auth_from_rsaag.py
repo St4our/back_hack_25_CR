@@ -18,6 +18,7 @@ async def redirect_from_elk(request: Request):
     """Обрабатывает редирект с ЕЛК и получает токен доступа"""
     code = request.query_params.get("code")
     state = request.query_params.get("state")
+    print(request.body())
     
     if not code:
         return "Ошибка: отсутствует временный код авторизации", 400
@@ -37,6 +38,7 @@ async def redirect_from_elk(request: Request):
     
     tokens = response.json()
     access_token = tokens.get("access_token")
+    print(tokens)
     
     # Запрос сведений о пользователе
     headers = {"Authorization": f"Bearer {access_token}"}
