@@ -10,7 +10,7 @@ from .routers.municipality import router as router_municipality
 from .routers.nextGis import router as router_nextGis
 from .routers.fiches import router as router_fiches
 from .routers.email import router as router_email
-from .routers.files import roiter as router_files
+from .routers.files import router as router_files
 
 
 router = APIRouter(
