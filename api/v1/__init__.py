@@ -10,6 +10,7 @@ from .routers.municipality import router as router_municipality
 from .routers.nextGis import router as router_nextGis
 from .routers.fiches import router as router_fiches
 from .routers.email import router as router_email
+from .routers.files import roiter as router_files
 
 
 router = APIRouter(
@@ -17,5 +18,5 @@ router = APIRouter(
     tags=["V1"]
 )
 
-routers = [router_health, router_auth, router_users, router_awards, router_events, router_fighter, router_municipality, router_nextGis, router_fiches, router_email]
+routers = [router_health, router_auth, router_users, router_awards, router_events, router_fighter, router_municipality, router_nextGis, router_fiches, router_email, router_files]
 [router.include_router(_router) for _router in routers]
