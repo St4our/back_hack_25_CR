@@ -1,31 +1,29 @@
-from fastapi import APIRouter, HTTPException
-from fastapi.responses import JSONResponse
+from fastapi import APIRouter
+from fastapi import HTTPException
+from typing import Dict, Any
+from pydantic import BaseModel
 
-from api.services.nextGis import get_features, utm_to_coord
+from api.services.nextGis import add_feature, coord_to_utm
 
-router = APIRouter(prefix="/get_features")
+router = APIRouter(
+    prefix="/add_feature"
+)
 
-@router.get("/")
-async def get_features_route(layer_id: int):
-    """Получение всех фичей с автоматической конвертацией координат"""
+class FeatureCreateSchema(BaseModel):
+    layer_id: int
+    feature_data: Dict[str, Any]
+
+@router.post("", response_model=Dict)
+async def add_feature_route(data: FeatureCreateSchema):
+    """Добавление новой записи (фичи) в слой с автоматической конвертацией координат"""
     try:
-        features = await get_features(layer_id)
+        geom = data.feature_data.get("geom")
+        if geom and "POINT" in geom:
+            lon, lat = map(float, geom.replace("POINT(", "").replace(")", "").split())
+            utm_x, utm_y = coord_to_utm(lon, lat)
+            data.feature_data["geom"] = f"POINT ({utm_x} {utm_y})"
 
-        if not isinstance(features, list):  # Проверяем, что API вернул список
-            raise HTTPException(status_code=500, detail="Invalid API response format")
-
-        for feature in features:
-            geom = feature.get("geom")
-            if geom and geom.startswith("POINT"):
-                try:
-                    coords = geom.replace("POINT(", "").replace(")", "").strip().split()
-                    utm_x, utm_y = map(float, coords)
-                    lon, lat = utm_to_coord(utm_x, utm_y)
-                    feature["geom"] = f"POINT ({lon} {lat})"
-                except ValueError:
-                    feature["geom"] = "Invalid geometry"
-
-        return JSONResponse(content={"status": "ok", "features": features}, status_code=200)
-
+        added_feature = await add_feature(data.layer_id, data.feature_data)
+        return {"status": "success", "feature": added_feature}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Server error: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
