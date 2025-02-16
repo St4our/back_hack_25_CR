@@ -1,6 +1,7 @@
 import requests
 from typing import Dict, Any
 from requests.auth import HTTPBasicAuth
+from pyproj import Transformer
 
 username = 'hackathon_18'
 password = 'hackathon_18_25'
@@ -80,3 +81,13 @@ async def get_features(layer_id: int) -> Dict[str, Any]:
     }
     response = requests.get(url, headers=headers, auth=auth)
     return response.json()
+
+def utm_to_coord(utm_x, utm_y):
+    transformer = Transformer.from_crs("EPSG:3857", "EPSG:4326", always_xy=True)
+    lon, lat = transformer.transform(utm_x, utm_y)
+    return lon, lat
+
+def coord_to_utm(lon, lat):
+    transformer = Transformer.from_crs("EPSG:4326", "EPSG:3857", always_xy=True)
+    utm_x, utm_y = transformer.transform(lon, lat)
+    return utm_x, utm_y
