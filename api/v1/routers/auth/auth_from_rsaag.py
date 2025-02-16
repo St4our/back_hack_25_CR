@@ -18,7 +18,9 @@ async def redirect_from_elk(request: Request):
     """Обрабатывает редирект с ЕЛК и получает токен доступа"""
     code = request.query_params.get("code")
     state = request.query_params.get("state")
-    print(request.body())
+    # Использование await для асинхронной функции
+    body = await request.body()
+    print(body)  # Теперь это будет работать без предупреждений
     
     if not code:
         return "Ошибка: отсутствует временный код авторизации", 400
