@@ -90,12 +90,6 @@ class FighterService:
             photo_path=photo_path
         )
 
-        await BaseService(self.db).create(
-            UserLog,
-            user_id=user_id,
-            fighter_id=fighter.id
-        )
-
         return {'status': 'ok', 'fighter_id': fighter.id}
 
     async def delete(self, id: int) -> dict:

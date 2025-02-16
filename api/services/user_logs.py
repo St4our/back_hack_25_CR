@@ -17,10 +17,16 @@ class UserLogService:
         """
         if not user_log:
             return {}
+
         return {
             "id": user_log.id,
             "user_id": user_log.user_id,
             "fighter_id": user_log.fighter_id,
+            "name": user_log.name,
+            "birth_death_years": user_log.birth_death_years,
+            "municipality_id": user_log.municipality_id,
+            "short_info": user_log.short_info,
+            "photo_path": user_log.photo_path
         }
 
     async def get_log(self, id: int) -> dict:
@@ -59,11 +65,21 @@ class UserLogService:
             "logs": [await self.generate_user_log_dict(log) for log in logs],
         }
 
-    async def create(self, user_id: int, fighter_id: int) -> dict:
+    async def create(self, user_id: int, fighter_id: int, name: str, birth_death_years: str, 
+                     municipality_id: int = None, short_info: str = None, photo_path: str = None) -> dict:
         """
         Создание нового лога пользователя
         """
-        log = await BaseService().create(self.model, user_id=user_id, fighter_id=fighter_id)
+        log = await BaseService().create(
+            self.model, 
+            user_id=user_id, 
+            fighter_id=fighter_id, 
+            name=name,
+            birth_death_years=birth_death_years,
+            municipality_id=municipality_id,
+            short_info=short_info,
+            photo_path=photo_path
+        )
         return {"status": "ok", "log_id": log.id}
 
     async def delete(self, id: int) -> dict:
