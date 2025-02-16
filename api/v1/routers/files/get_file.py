@@ -1,8 +1,9 @@
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import FileResponse
-from config import upload_dir
+from config import settings
 import os
 
+upload_dir = settings.upload_dir
 
 
 router = APIRouter(

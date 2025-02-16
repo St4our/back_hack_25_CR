@@ -1,7 +1,9 @@
 from fastapi import APIRouter, UploadFile, File
 import shutil
 import os
-from config import upload_dir
+from config import settings
+
+upload_dir = settings.upload_dir
 
 
 router = APIRouter(
