@@ -34,6 +34,8 @@ router = APIRouter(
 routers = [router_awards, router_events, router_fighters, router_municipalities, router_userlogs, router_users]
 [router.include_router(_router) for _router in routers]
 
+app.include_router(router)
+
 def create_app():
     logger.debug('Starting API ...')
     return app
