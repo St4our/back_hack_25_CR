@@ -29,7 +29,7 @@ class FighterService:
             'id': fighter.id,
             'name': fighter.name,
             'birth_death_years': fighter.birth_death_years,
-            'municipality_title': municipality.title,
+            'municipality_id': fighter.municipality.title,
             'short_info': fighter.short_info,
             'photo_path': fighter.photo_path,
             'awards': [{'id': award.id, 'name': award.name} for award in (fighter.awards or [])],
