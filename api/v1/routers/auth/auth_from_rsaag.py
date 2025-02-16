@@ -43,7 +43,10 @@ async def redirect_from_elk(request: Request):
         "code": code,
         "grant_type": "authorization_code"
     }
-    response = requests.post(ELK_TOKEN_URL, json=data)
+
+    print(data)
+
+    response = requests.post(ELK_TOKEN_URL, data)
     
     if response.status_code != 200:
         return f"Ошибка при получении токена: {response.text}", response.status_code
