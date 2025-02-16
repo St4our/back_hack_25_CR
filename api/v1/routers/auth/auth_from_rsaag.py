@@ -13,7 +13,7 @@ REDIRECT_URI = "http://hackathon-1.orb.ru/callback"
 ELK_USER_INFO_URL = "https://lk.orb.ru/api/get_user"
 ELK_TOKEN_URL = "https://lk.orb.ru/oauth/token"
 
-@router.route('/')
+@router.post('')
 async def redirect_from_elk(request: Request):
     """Обрабатывает редирект с ЕЛК и получает токен доступа"""
     code = request.query_params.get("code")
