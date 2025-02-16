@@ -1,12 +1,10 @@
-from fastapi import HTTPException, Depends
+from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 from sqlalchemy.future import select
 from db.models.fighters import Fighter
-from db.models.user_logs import UserLog
 from api.services.base import BaseService
-from db.database import get_db
-from fastapi import Query
+
 
 class FighterService:
     """
@@ -29,9 +27,10 @@ class FighterService:
             'id': fighter.id,
             'name': fighter.name,
             'birth_death_years': fighter.birth_death_years,
-            'municipality_id': fighter.municipality.title,
+            'municipality_id': fighter.municipality.title if fighter.municipality else None,
             'short_info': fighter.short_info,
             'photo_path': fighter.photo_path,
+            'cords': fighter.cords,  # Добавлено поле cords
             'awards': [{'id': award.id, 'name': award.name} for award in (fighter.awards or [])],
             'events': [{'id': event.id, 'title': event.title} for event in (fighter.events or [])]
         }
@@ -43,7 +42,7 @@ class FighterService:
             .options(
                 joinedload(Fighter.awards),
                 joinedload(Fighter.events),
-                joinedload(Fighter.municipality)  # Загружаем объект района
+                joinedload(Fighter.municipality)
             )
             .filter(Fighter.id == id)
         )
@@ -62,7 +61,7 @@ class FighterService:
         query = select(Fighter).options(
             joinedload(Fighter.awards),
             joinedload(Fighter.events),
-            joinedload(Fighter.municipality)  # Загружаем объект района
+            joinedload(Fighter.municipality)
         ).order_by(Fighter.id.desc())
 
         if name and name.strip():
@@ -79,15 +78,16 @@ class FighterService:
             'fighters': [await self.generate_fighter_dict(fighter) for fighter in fighters]
         }
 
-    async def create(self, user_id: int, name: str, birth_death_years: str, municipality_id: int, short_info: str, photo_path: str) -> dict:
-        """ Создание нового бойца и запись в user_logs """
+    async def create(self, user_id: int, name: str, birth_death_years: str, municipality_id: int, short_info: str, photo_path: str, cords: str) -> dict:
+        """ Создание нового бойца """
         fighter = await BaseService(self.db).create(
             self.model,
             name=name,
             birth_death_years=birth_death_years,
             municipality_id=municipality_id,
             short_info=short_info,
-            photo_path=photo_path
+            photo_path=photo_path,
+            cords=cords  # Добавляем координаты
         )
 
         return {'status': 'ok', 'fighter_id': fighter.id}
@@ -97,7 +97,7 @@ class FighterService:
         await BaseService(self.db).delete(self.model, id=id)
         return {'status': 'ok'}
 
-    async def update(self, id: int, name: str, birth_death_years: str, short_info: str, photo_path: str) -> dict:
+    async def update(self, id: int, name: str, birth_death_years: str, short_info: str, photo_path: str, cords: str) -> dict:
         """ Обновление информации о бойце """
         fighter = await BaseService(self.db).get(self.model, id=id)
         if not fighter:
@@ -107,6 +107,7 @@ class FighterService:
         fighter.birth_death_years = birth_death_years
         fighter.short_info = short_info
         fighter.photo_path = photo_path
+        fighter.cords = cords  # Обновляем координаты
 
         updated_fighter = await BaseService(self.db).update(fighter)
         return {'status': 'ok', 'fighter': await self.generate_fighter_dict(updated_fighter)}
