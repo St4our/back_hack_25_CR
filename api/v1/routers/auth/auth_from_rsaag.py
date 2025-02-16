@@ -9,7 +9,7 @@ router = APIRouter(
 )
 
 CLIENT_ID = 28
-CLIENT_SECRET = "2A5UHepXTRqdRMkYPSK3hq2WKH1JQA4jozThOVGxRe"
+CLIENT_SECRET = "2A5UHepXTRqdRMkYPSK3hq2WKH1JQA4jozThOVGx"
 REDIRECT_URI = "http://hackathon-1.orb.ru/callback"
 ELK_USER_INFO_URL = "https://lk.orb.ru/api/get_user"
 ELK_TOKEN_URL = "https://lk.orb.ru/oauth/token"
