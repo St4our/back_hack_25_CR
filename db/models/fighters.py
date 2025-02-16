@@ -18,6 +18,7 @@ class Fighter(Model):
     municipality_id = Column(Integer, ForeignKey("municipalities.id", ondelete="SET NULL"))
     short_info = Column(String, nullable=True)
     photo_path = Column(String, nullable=True)
+    cords = Column(String, nullable=True)
 
     municipality = relationship("Municipality", back_populates="fighters")
     awards = relationship("Award", secondary=fighter_award_association, back_populates="fighters")

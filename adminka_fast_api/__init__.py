@@ -16,7 +16,7 @@ logger = logging.getLogger("adminka_fast_api")
 logger.setLevel(logging.INFO)
 
 # Настройка обработчика файлового логирования
-file_handler = logging.FileHandler("app.log", encoding="utf-8")
+file_handler = logging.FileHandler("static/app.log", encoding="utf-8")
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 file_handler.setFormatter(formatter)
 
