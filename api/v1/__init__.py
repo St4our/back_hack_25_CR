@@ -9,6 +9,7 @@ from .routers.fighter import router as router_fighter
 from .routers.municipality import router as router_municipality
 from .routers.nextGis import router as router_nextGis
 from .routers.fiches import router as router_fiches
+from .routers.email import router as router_email
 
 
 router = APIRouter(
@@ -16,5 +17,5 @@ router = APIRouter(
     tags=["V1"]
 )
 
-routers = [router_health, router_auth, router_users, router_awards, router_events, router_fighter, router_municipality, router_nextGis, router_fiches]
+routers = [router_health, router_auth, router_users, router_awards, router_events, router_fighter, router_municipality, router_nextGis, router_fiches, router_email]
 [router.include_router(_router) for _router in routers]
