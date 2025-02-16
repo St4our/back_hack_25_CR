@@ -57,12 +57,12 @@ async def redirect_from_elk(request: Request):
     
     # Запрос сведений о пользователе
     headers = {"Authorization": f"Bearer {access_token}"}
-    user_info_response = requests.get(f"{ELK_USER_INFO_URL}?scope=personal_data+email+auth_method", headers=headers)
+    user_info_response = requests.get(f"{ELK_USER_INFO_URL}?scope=email+auth_method", headers=headers)
     print(user_info_response)
     print(user_info_response.text)
     print(user_info_response.status_code)
     if user_info_response.status_code != 200:
         return f"Ошибка при получении данных пользователя: {user_info_response.text}", user_info_response.status_code
     
-    user_info = user_info_response.json()
+    user_info = user_info_response.json()    
     return JSONResponse(content=user_info)

@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from typing import List, Optional
 from pydantic import BaseModel
 
-from api.services.events import EventService
+from adminka_fast_api.services.events import EventService
 from db.models.events import Event
 
 router = APIRouter(

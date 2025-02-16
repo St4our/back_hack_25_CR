@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from typing import List, Optional
 from pydantic import BaseModel
 
-from api.services.user_logs import UserLogService
+from adminka_fast_api.services.user_logs import UserLogService
 
 router = APIRouter(
     prefix="/user_logs",

@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from typing import List
 from pydantic import BaseModel, EmailStr
 
-from api.services.user import UserService
+from adminka_fast_api.services.user import UserService
 from db.models.users import User
 
 router = APIRouter(

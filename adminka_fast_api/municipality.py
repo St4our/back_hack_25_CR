@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from typing import List, Optional
 from pydantic import BaseModel
 
-from api.services.municipality import MunicipalityService
+from adminka_fast_api.services.municipality import MunicipalityService
 from db.models.municipalities import Municipality
 
 router = APIRouter(
