@@ -1,6 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from typing import List, Optional
 from pydantic import BaseModel
+import logging
+from adminka_fast_api import logger  # Импортируем логер
+from adminka_fast_api.services.award import AwardService 
 
 from adminka_fast_api.services.award import AwardService
 from db.models.awards import Award
@@ -36,6 +39,7 @@ async def get_award(award_id: int):
     """
     Получить награду по ID
     """
+    logger.info(f"Получение награды с ID {award_id}")
     result = await award_service.get_award(award_id)
     return result['award']
 
@@ -45,20 +49,20 @@ async def get_all_awards():
     """
     Получить все награды
     """
+    logger.info("Получение всех наград")
     result = await award_service.get_all_awards()
     return result['awards']
 
 # Роут для поиска наград по названию
 @router.get("/search/", response_model=dict)
 async def search_awards(
-    query: str = Query(..., description="Поисковый запрос"),
-    limit: int = Query(10, description="Лимит результатов"),
-    page: int = Query(1, description="Номер страницы")
+    query: str = Query(..., description="Поисковый запрос")
 ):
     """
     Поиск наград по названию
     """
-    result = await award_service.search_awards(query, limit, page)
+    logger.info(f"Поиск наград по запросу: {query}")
+    result = await award_service.search_awards(query)
     return result
 
 # Роут для создания новой награды
@@ -67,6 +71,7 @@ async def create_award(award_data: AwardCreateSchema):
     """
     Создать новую награду
     """
+    logger.info(f"Создание новой награды: {award_data.name}")
     result = await award_service.create(
         name=award_data.name,
         photo_path=award_data.photo_path,
@@ -80,6 +85,7 @@ async def update_award(award_id: int, award_data: AwardUpdateSchema):
     """
     Обновить информацию о награде
     """
+    logger.info(f"Обновление награды с ID {award_id}")
     result = await award_service.update(
         id=award_id,
         name=award_data.name,
@@ -94,5 +100,6 @@ async def delete_award(award_id: int):
     """
     Удалить награду
     """
+    logger.info(f"Удаление награды с ID {award_id}")
     result = await award_service.delete(award_id)
     return result

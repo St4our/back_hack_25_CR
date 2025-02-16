@@ -10,6 +10,20 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from loguru import logger
+import logging
+
+logger = logging.getLogger("adminka_fast_api")
+logger.setLevel(logging.INFO)
+
+# Настройка обработчика файлового логирования
+file_handler = logging.FileHandler("app.log", encoding="utf-8")
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+file_handler.setFormatter(formatter)
+
+# Добавляем обработчик к логеру
+logger.addHandler(file_handler)
+
+__all__ = ["logger"]
 
 
 app = FastAPI(
