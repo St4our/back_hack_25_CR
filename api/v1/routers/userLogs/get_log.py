@@ -3,8 +3,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from api.services.user_logs import UserLogService
 from db.database import get_db
 
-
-
 router = APIRouter(prefix="/get_log")
 
 @router.get("")
