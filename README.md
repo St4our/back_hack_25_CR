@@ -85,3 +85,29 @@ python3 chat.py
 
 чат запускается как отдельная страница на:
 http://ваш_ip:9000/ai #на данный момент с фронта на vue обращение к нашему сайту, можете изменить на ваш
+
+
+Для запуска телеграм бота 
+Распакуйте в нужную папку архив TtBot.rar
+
+Установка зависимостей (если зависимости прописаны в файле requirements.txt): 
+
+pip install -r requirements.txt
+или
+pip3 install -r requirements.txt
+
+- создайте файл config.py и пропишите в нем:
+API_TOKEN = "api_token_вашего_бота"
+ADMIN_ID = "chat_id_админа_из_тг"
+
+Запуск файла на ubuntu :
+
+nohup python -u main.py &
+или
+nohup python3 -u main.py & 
+
+Запуск файла на windows :
+
+python main.py
+или
+python3 main.py
