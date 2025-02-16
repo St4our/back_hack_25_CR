@@ -18,14 +18,22 @@ class FighterService:
         self.model = Fighter
 
     @staticmethod
-    async def generate_fighter_dict(fighter):
-        """ Генерация словаря бойца с названием района """
+    async def generate_fighter_dict(fighter: Fighter) -> dict:
+        """
+        Генерация информации о бойце в виде словаря
+        """
+        if not fighter:
+            return {}
+
         return {
-            "id": fighter.id,
-            "name": fighter.name,
-            "municipality": fighter.municipality.title if fighter.municipality else None,  # Теперь выводим название района
-            "awards": [award.name for award in fighter.awards],
-            "events": [event.name for event in fighter.events]
+            'id': fighter.id,
+            'name': fighter.name,
+            'birth_death_years': fighter.birth_death_years,
+            'municipality_title': municipality.title,
+            'short_info': fighter.short_info,
+            'photo_path': fighter.photo_path,
+            'awards': [{'id': award.id, 'name': award.name} for award in (fighter.awards or [])],
+            'events': [{'id': event.id, 'title': event.title} for event in (fighter.events or [])]
         }
 
     async def get_fighter(self, id: int):
