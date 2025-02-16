@@ -132,15 +132,6 @@ class UserService:
                 detail='You did not try to log in'
             )
         current_code = user.last_code
-        expiration_time = user.code_expiration
-        # Обнуление текущего кода
-        await BaseService().update(user, last_code=None, code_expiration=None)
-        # Проверка времени действия кода 
-        if datetime.now() > expiration_time:
-            raise HTTPException(
-                status_code=401,
-                detail='Code has been expired, request new please'
-            )
         # Проверка соответствия кода
         if current_code != code:
             raise HTTPException(

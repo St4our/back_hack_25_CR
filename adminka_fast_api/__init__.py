@@ -5,7 +5,6 @@ from .events import router as router_events
 from .fighter import router as router_fighters
 from .municipality import router as router_municipalities
 from .userlogs import router as router_userlogs
-from .users import router as router_users
 import asyncio
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -31,7 +30,7 @@ router = APIRouter(
     tags=["Admin_panel"]
 )
 
-routers = [router_awards, router_events, router_fighters, router_municipalities, router_userlogs, router_users]
+routers = [router_awards, router_events, router_fighters, router_municipalities, router_userlogs]
 [router.include_router(_router) for _router in routers]
 
 app.include_router(router)

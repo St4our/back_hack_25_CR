@@ -1,169 +1,54 @@
-from datetime import datetime, timedelta
-import string
-import random
-from loguru import logger
-from passlib.hash import pbkdf2_sha512
+from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import HTTPException, BackgroundTasks
-from fastapi.responses import JSONResponse
 
 from api.services.base import BaseService
 from db.models import User
-from api.utils import generate_token, send_verification_code
-from config import settings
+from passlib.hash import pbkdf2_sha512
 
-
-
-class UserService:
+class UserService(BaseService):
     """
-    Пользовательский CRUD+ менеджер
+    CRUD для управления пользователями
     """
-    def __init__(self):
-        self.model = User
+    def __init__(self, db: AsyncSession):
+        self.db = db
 
-    @staticmethod
-    async def generate_user_dict(user: User) -> dict:
+    async def create(self, name: str, email: str, password: str, is_admin: bool = False, bg_tasks: BackgroundTasks = None):
         """
-        Генерация информации о пользователе в виде словаря 
+        Создание нового пользователя
         """
+        existing_user = await self.get(self.db, User, email=email)
+        if existing_user:
+            raise HTTPException(status_code=400, detail="User already exists")
+
+        password_hash = pbkdf2_sha512.hash(password)
+        user = await self.create_model(self.db, User, name=name, email=email, password_hash=password_hash, is_admin=is_admin)
+        return user
+
+    async def get(self, user_id: int = None, email: str = None):
+        """
+        Получение пользователя по ID или email
+        """
+        filters = {}
+        if user_id:
+            filters["id"] = user_id
+        if email:
+            filters["email"] = email
+
+        user = await self.get(self.db, User, **filters)
         if not user:
-            return {}
-        return {
-            'id': user.id,
-            'name': user.name,
-            'email': user.email,
-            'is_admin': user.is_admin,
-            'password_hash': user.password_hash,
-            'last_code': user.last_code
-        }
+            raise HTTPException(status_code=404, detail="User not found")
+        return user
 
-    async def create(self, name: str, email: str, password, bg_tasks: BackgroundTasks) -> dict:
-        if await BaseService().get(self.model, email=email):
-            return HTTPException(
-                status_code=400,
-                detail='User already exists'
-            )
-        await BaseService().create(
-            self.model,
-            email=email,
-            name=name,
-            password_hash=pbkdf2_sha512.hash(password),
-        )
-        user = await BaseService().get(self.model, email=email)
-        # Генерация одноразового кода
-        code = "".join(random.choices(string.digits, k=6))
-        # Отправка кода по email
-        bg_tasks.add_task(send_verification_code, email, code)
-        # Код истечёт через 15 минут
-        expiration = datetime.now() + timedelta(minutes=15)
-        await BaseService().update(user, last_code=code, code_expiration=expiration)
-        return JSONResponse(content={
-            'status': 'ok',
-            'detail': 'Code is sent'
-        }, status_code=202)
+    async def get_all(self):
+        """
+        Получение списка всех пользователей
+        """
+        users = await self.get_all(self.db, User)
+        return users
 
-    async def get(self, user: User, id: int):
+    async def delete(self, user_id: int):
         """
-        Получение информации о пользователе для бэкенда
+        Удаление пользователя
         """
-        user_db = await BaseService().get(self.model, id=id)
-        if not user:
-            raise HTTPException(
-                status_code=404,
-                detail='User not found',
-            )
-        if user_db.id != user.id:
-            raise HTTPException(
-                status_code=401,
-                detail='Cannot access to this user with your session',
-            )
-        return {
-            'status': 'ok',
-            'user': await UserService().generate_user_dict(user=user_db)
-        }
-
-    async def login(self, email: str, password: str, bg_tasks: BackgroundTasks):
-        """
-        Авторизация (проверка пароля)
-        """
-        user = await BaseService().get(self.model, email=email)
-        if not user:
-            raise HTTPException(
-                status_code=404,
-                detail='User was not found'
-            )
-
-        if not pbkdf2_sha512.verify(password, user.password_hash):
-            raise HTTPException(
-                status_code=401,
-                detail='Wrong password'
-            )
-        # Если админ - сразу генерируем токен
-        if user.is_admin:
-            result = await UserService().generate_user_dict(user=user)
-            result['token'] = generate_token(email=email)
-            logger.debug(f"Admin with id `{user.id}` got login token")
-            return result
-        # Генерация одноразового кода
-        code = "".join(random.choices(string.digits, k=6))
-        # Отправка кода по email
-        bg_tasks.add_task(send_verification_code, email, code)
-        # Код истечёт через 15 минут
-        expiration = datetime.now() + timedelta(minutes=15)
-        await BaseService().update(user, last_code=code, code_expiration=expiration)
-        return JSONResponse(content={
-            'status': 'ok',
-            'detail': 'Code is sent'
-        }, status_code=202)
-
-    async def verify_code(self, email: str, code: str):
-        """
-        Верификация пользователя (проверка кода + генерация токена)
-        """
-        user = await BaseService().get(self.model, email=email)
-        if not user:
-            raise HTTPException(
-                status_code=404,
-                detail='User was not found'
-            )
-        # Проверка на наличие кода
-        if not user.last_code:
-            raise HTTPException(
-                status_code=404,
-                detail='You did not try to log in'
-            )
-        current_code = user.last_code
-        """
-        expiration_time = user.code_expiration
-        # Обнуление текущего кода
-        await BaseService().update(user, last_code=None, code_expiration=None)
-        # Проверка времени действия кода 
-        if datetime.now() > expiration_time:
-            raise HTTPException(
-                status_code=401,
-                detail='Code has been expired, request new please'
-            )"""
-        # Проверка соответствия кода
-        if current_code != code:
-            raise HTTPException(
-                status_code=401,
-                detail='Wrong code'
-            )
-        result = await UserService().generate_user_dict(user=user)
-        result['token'] = generate_token(email=email)
-        return result
-
-    async def change_password(self, user: User, new_password: str):
-        """
-        Изменение пароля
-        """
-        try:
-            await BaseService().update(user, password_hash=pbkdf2_sha512.hash(new_password))
-        except Exception as e:
-            logger.error(f'Failed to update password for `{user.email}`: {e}')
-            raise HTTPException(
-               status_code=500,
-               detail='Failed to update password due to internal error'
-            )
-        return {
-            'status': 'ok'
-        }
+        await self.delete_model(self.db, User, id=user_id)
+        return {"status": "ok", "message": "User deleted"}
