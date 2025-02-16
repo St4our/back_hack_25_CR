@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from services.email_service import send_mes
+from api.services.email_service import send_mes
 
 
 router = APIRouter(
